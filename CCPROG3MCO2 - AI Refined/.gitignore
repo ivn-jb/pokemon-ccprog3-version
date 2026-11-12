@@ -1,0 +1,14 @@
+# Java build output
+*.class
+
+# IDE and workspace files
+.vs/
+.idea/
+*.iml
+
+# Generated documentation output
+/doc/
+
+# Operating-system files
+.DS_Store
+Thumbs.db

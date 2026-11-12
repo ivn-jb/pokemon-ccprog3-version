@@ -107,32 +107,51 @@ public class Inventory {
     /**
      * evolves the two creatures
      */
-    public void evolveCreature(){
-        Creature CNewCreature = null;
-    List<Creature> creaturesToRemove = new ArrayList<>();
-
-    for (Creature creature : aAllCreatures) {
-        if (creature.getEvolutionLevel() == ECreature1.getEvolutionLevel() + 1 && creature.getFamily() == ECreature1.getFamily()) {
-            CNewCreature = creature;
-            creaturesToRemove.add(aCreatureList.get(nIndex1));
-            creaturesToRemove.add(aCreatureList.get(nIndex2));
-
-            if (ECreature1.getIsActive() == 1 || ECreature2.getIsActive() == 1) {
-                CNewCreature.setIsActive(1);
-            }
-
-            System.out.println("\nEvolution SUCCESS!! " + CNewCreature.getName() + " has been added to your inventory.");
-            System.out.println("--------------------------");
-            System.out.println("Name: " + CNewCreature.getName());
-            System.out.println("Type: " + CNewCreature.getType());
-            System.out.println("Family: " + CNewCreature.getFamily());
-            System.out.println("Evolution Level: " + CNewCreature.getEvolutionLevel());
-            System.out.println("--------------------------\n");
+    public Creature evolveCreature(){
+        if (ECreature1 == null || ECreature2 == null
+                || nIndex1 < 0 || nIndex2 < 0
+                || nIndex1 >= aCreatureList.size() || nIndex2 >= aCreatureList.size()
+                || nIndex1 == nIndex2) {
+            return null;
         }
-    }
 
-    // Remove creatures outside the loop to avoid ConcurrentModificationException
-    aCreatureList.removeAll(creaturesToRemove);
+        Creature CNewCreature = null;
+        for (Creature creature : aAllCreatures) {
+            if (creature.getEvolutionLevel() == ECreature1.getEvolutionLevel() + 1
+                    && creature.getFamily() == ECreature1.getFamily()) {
+                CNewCreature = new Creature(creature.getName(), creature.getType(),
+                        creature.getFamily(), creature.getEvolutionLevel(), creature.getFilename());
+                break;
+            }
+        }
+
+        if (CNewCreature == null) {
+            return null;
+        }
+
+        if (ECreature1.getIsActive() == 1 || ECreature2.getIsActive() == 1) {
+            CNewCreature.setIsActive(1);
+        }
+
+        int firstIndex = Math.max(nIndex1, nIndex2);
+        int secondIndex = Math.min(nIndex1, nIndex2);
+        aCreatureList.remove(firstIndex);
+        aCreatureList.remove(secondIndex);
+        aCreatureList.add(CNewCreature);
+
+        nIndex1 = -1;
+        nIndex2 = -1;
+        ECreature1 = null;
+        ECreature2 = null;
+
+        System.out.println("\nEvolution SUCCESS!! " + CNewCreature.getName() + " has been added to your inventory.");
+        System.out.println("--------------------------");
+        System.out.println("Name: " + CNewCreature.getName());
+        System.out.println("Type: " + CNewCreature.getType());
+        System.out.println("Family: " + CNewCreature.getFamily());
+        System.out.println("Evolution Level: " + CNewCreature.getEvolutionLevel());
+        System.out.println("--------------------------\n");
+        return CNewCreature;
     }
 
 
@@ -142,7 +161,14 @@ public class Inventory {
      * @param CNewActiveCreature  Creature object for new Creature to be assigned active
      */
     public void setActiveCreature(int nIndex){        //sets current active creature to 0 and new active creature to 1
-        aCreatureList.get(getActiveIndex()).setIsActive(0);
+        if (nIndex < 0 || nIndex >= aCreatureList.size()) {
+            return;
+        }
+
+        int activeIndex = getActiveIndex();
+        if (activeIndex >= 0) {
+            aCreatureList.get(activeIndex).setIsActive(0);
+        }
         aCreatureList.get(nIndex).setIsActive(1);
     }
 
@@ -153,7 +179,7 @@ public class Inventory {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     /**

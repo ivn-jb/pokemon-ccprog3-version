@@ -13,6 +13,8 @@ public class Gamecontroller {
     private CreatureGenerator creatureGenerator;
     private Inventory inventory;
     private Player player;
+    private int inventoryPage;
+    private boolean battleSwapMode;
 
     /**
      * constructor that accepts views and models
@@ -32,6 +34,8 @@ public class Gamecontroller {
         this.creatureGenerator = creatureGenerator;
         this.inventory = inventory;
         this.player = player;
+        this.inventoryPage = 0;
+        this.battleSwapMode = false;
 
 
         this.gameview.setStartBtnListener(new ActionListener() {
@@ -241,9 +245,13 @@ public class Gamecontroller {
 			public void actionPerformed(ActionEvent e) {
 				// to do
 
-                gameview.clearScreen();
-                
+                battleSwapMode = false;
+                inventoryPage = 0;
+                showInventoryPage();
+                return;
 
+                /*
+                gameview.clearScreen();
                 gameview.setInventoryScreen();
                 ArrayList<Creature> list = inventory.getCreatureList();
 
@@ -279,7 +287,7 @@ public class Gamecontroller {
                     gameview.setinventorydesc2(description);
                 } else {
                     gameview.setImage2(null);
-                    gameview.setinventorydesc2("");
+                    gameview.setinventorydesc2("Empty inventory slot");
                     
                 }
 
@@ -299,7 +307,7 @@ public class Gamecontroller {
                     gameview.setinventorydesc3(description);
                 } else {
                     gameview.setImage3(null);
-                    gameview.setinventorydesc3("");
+                    gameview.setinventorydesc3("Empty inventory slot");
                 }
 
                 if(list.size() >= 4){
@@ -318,7 +326,7 @@ public class Gamecontroller {
                     gameview.setinventorydesc4(description);
                 } else {
                     gameview.setImage4(null);
-                    gameview.setinventorydesc4("");
+                    gameview.setinventorydesc4("Empty inventory slot");
                 }
 
                 if(list.size() >= 5){
@@ -337,7 +345,7 @@ public class Gamecontroller {
                     gameview.setinventorydesc5(description);
                 } else {
                     gameview.setImage5(null);
-                    gameview.setinventorydesc5("");
+                    gameview.setinventorydesc5("Empty inventory slot");
                 }
 
                 if(list.size() >= 6){
@@ -356,7 +364,7 @@ public class Gamecontroller {
                     gameview.setinventorydesc6(description);
                 } else {
                     gameview.setImage6(null);
-                    gameview.setinventorydesc6("");
+                    gameview.setinventorydesc6("Empty inventory slot");
                 }
 
                 
@@ -381,7 +389,27 @@ public class Gamecontroller {
 				// }
 
                 // gameview.setinventorycontent(displayText);
-                
+                */
+            }
+		});
+
+        this.gameview.setnextpagebuttonListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                if (inventoryPage < getInventoryPageCount() - 1) {
+                    inventoryPage++;
+                    showInventoryPage();
+                }
+            }
+		});
+
+        this.gameview.setbackpagebuttonListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                if (inventoryPage > 0) {
+                    inventoryPage--;
+                    showInventoryPage();
+                }
             }
 		});
 
@@ -389,9 +417,10 @@ public class Gamecontroller {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// to do
+				gameview.resetEvolutionSelection();
                 gameview.clearScreen();
                 gameview.setevolutionscreen();
-                gameview.setMyDialogue("");
+                gameview.setMyDialogue("Choose two Pokemon from your inventory with the same family and evolution level.");
                 
                 
             }
@@ -744,29 +773,11 @@ public class Gamecontroller {
 				// to do
 
                 int index = gameview.getSwapTFInt();
-                inventory.setActiveCreature(index);
-
-                String displayText = "";
-
-                ArrayList<Creature> list = inventory.getCreatureList();
-
-				for(int i=0; i< list.size(); i++) {
-                    if(list.get(i).getIsActive() == 1){
-                        displayText += list.get(i).getName() + 
-                                    " EL: " + list.get(i).getEvolutionLevel() + 
-                                    " TYPE: " + list.get(i).getType() + 
-                                    " ACTIVE " + "\n";
-                    } else {
-                        displayText += list.get(i).getName() + 
-                                    " EL: " + list.get(i).getEvolutionLevel() + 
-                                    " TYPE: " + list.get(i).getType() + "\n";
-                    }
-					
-				}
-
-                gameview.setinventorycontent(displayText);
-                
-                
+                if (index >= 0 && index < inventory.getListSize()) {
+                    inventory.setActiveCreature(index);
+                    inventoryPage = index / 6;
+                    showInventoryPage();
+                }
             }
 		});
 
@@ -785,7 +796,6 @@ public class Gamecontroller {
                 gameview.setpoke1TA("Pokemon: " + CCreature.getName() +
                                     "\nEL: " + CCreature.getEvolutionLevel() +
                                     "\nType: " + CCreature.getType());
-                                    gameview.setpicture1(CCreature.getFilename());
                 gameview.setpokepic1(CCreature.getFilename());
                 }
                 
@@ -810,7 +820,6 @@ public class Gamecontroller {
                 gameview.setpoke2TA("Pokemon: " + CCreature.getName() +
                                     "\nEL: " + CCreature.getEvolutionLevel() +
                                     "\nType: " + CCreature.getType());
-                                    gameview.setpicture2(CCreature.getFilename());
                 gameview.setpokepic2(CCreature.getFilename());
                 }
                 
@@ -823,12 +832,26 @@ public class Gamecontroller {
 			public void actionPerformed(ActionEvent e) {
 				// to do
 
-                if(inventory.getECreature1().getEvolutionLevel() != 3 &&
+                if(inventory.getECreature1() != null &&
+                   inventory.getECreature2() != null &&
+                   inventory.getECreature1().getEvolutionLevel() != 3 &&
                    inventory.getECreature2().getEvolutionLevel() != 3 &&
                     inventory.getECreature1().getEvolutionLevel() == inventory.getECreature2().getEvolutionLevel() &&
                     inventory.getECreature1().getFamily() == inventory.getECreature2().getFamily() &&
                     inventory.getnIndex1() != inventory.getnIndex2()){
-                        inventory.evolveCreature();
+                        Creature evolvedCreature = inventory.evolveCreature();
+                        if (evolvedCreature != null) {
+                            int newCreatureCode = inventory.getListSize() - 1;
+                            gameview.clearScreen();
+                            gameview.showEvolutionResultScreen(
+                                    evolvedCreature.getFilename(),
+                                    "Evolution successful!\n"
+                                    + evolvedCreature.getName()
+                                    + " was added to your inventory.\nCode: "
+                                    + newCreatureCode);
+                        } else {
+                            gameview.setMyDialogue("Evolution failed. Choose two different compatible Pokemon.");
+                        }
                     } 
                 
                 
@@ -857,24 +880,16 @@ public class Gamecontroller {
                                 + battlePhase.getCEnemyCreature().getType() + "\nEnemy Health: " + battlePhase.getnEnemyHealth()
                                 + "\nYour Pokemon: " + battlePhase.getCPlayerCreature().getName() + "\nPokemon type: "
                                 + battlePhase.getCPlayerCreature().getType());
-                if (battlePhase.getturn() == 3 || battlePhase.getnEnemyHealth() <= 0){
+                if (battlePhase.getnEnemyHealth() <= 0){
                     battlePhase.setturn(0);
                     battlePhase.setnEnemyHealth(50);
-                    gameview.setstats("");
-                    if (player.getmapsignal() == 1){
-                        gameview.clearScreen();
-                        gameview.setArea1Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 2){
-                        gameview.clearScreen();
-                        gameview.setArea2Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 3){
-                        gameview.clearScreen();
-                        gameview.setArea3Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    }
-
+                    gameview.clearScreen();
+                    gameview.showCatchResultScreen(
+                            battlePhase.getCEnemyCreature().getName() + " fainted!");
+                } else if (battlePhase.getturn() == 3){
+                    battlePhase.setturn(0);
+                    battlePhase.setnEnemyHealth(50);
+                    returnToMap();
                 }
                 
             }
@@ -884,28 +899,9 @@ public class Gamecontroller {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// to do
-                gameview.clearScreen();
-                gameview.setswapscreen();
-
-                String displayText = "";
-
-                ArrayList<Creature> list = inventory.getCreatureList();
-
-				for(int i=0; i< list.size(); i++) {
-                    if(list.get(i).getIsActive() == 1){
-                        displayText += list.get(i).getName() + 
-                                    " EL: " + list.get(i).getEvolutionLevel() + 
-                                    " TYPE: " + list.get(i).getType() + 
-                                    " ACTIVE " + "\n";
-                    } else {
-                        displayText += list.get(i).getName() + 
-                                    " EL: " + list.get(i).getEvolutionLevel() + 
-                                    " TYPE: " + list.get(i).getType() + "\n";
-                    }
-					
-				}
-                
-                gameview.setinventorycontent(displayText);
+                battleSwapMode = true;
+                inventoryPage = 0;
+                showInventoryPage();
             }
 		});
 
@@ -919,6 +915,7 @@ public class Gamecontroller {
                     inventory.setActiveCreature(index);
                     battlePhase.setCPlayerCreature(inventory.getCreature(index));
 
+                    battleSwapMode = false;
                     gameview.clearScreen();
                     gameview.showbattlescreen(battlePhase.getCEnemyCreature().getFilename());
                     battlePhase.setturn(battlePhase.getturn() + 1);
@@ -956,37 +953,36 @@ public class Gamecontroller {
                     inventory.addCreature(battlePhase.getCEnemyCreature());
                     battlePhase.setturn(0);
                     battlePhase.setnEnemyHealth(50);
-                    if (player.getmapsignal() == 1){
-                        gameview.clearScreen();
-                        gameview.setArea1Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 2){
-                        gameview.clearScreen();
-                        gameview.setArea2Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 3){
-                        gameview.clearScreen();
-                        gameview.setArea3Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    }
+                    gameview.clearScreen();
+                    gameview.showCatchResultScreen(
+                            "Catch successful! " + battlePhase.getCEnemyCreature().getName()
+                            + " was added to your inventory.");
                 } else if(battlePhase.getturn() == 3) {
                     battlePhase.setturn(0);
                     battlePhase.setnEnemyHealth(50);
-                    if (player.getmapsignal() == 1){
-                        gameview.clearScreen();
-                        gameview.setArea1Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 2){
-                        gameview.clearScreen();
-                        gameview.setArea2Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    } else if (player.getmapsignal() == 3){
-                        gameview.clearScreen();
-                        gameview.setArea3Screen();
-                        gameview.setRed(area.getnXPos(),area.getnYPos());
-                    }
+                    gameview.clearScreen();
+                    gameview.showCatchResultScreen(
+                            "Catch failed. " + battlePhase.getCEnemyCreature().getName()
+                            + " escaped after three turns.");
+                } else {
+                    gameview.setstats("Catch failed. Try again.");
                 }
                 
+            }
+		});
+
+        this.gameview.setcatchResultButtonListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                returnToMap();
+            }
+		});
+
+        this.gameview.setevolutionResultButtonListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                gameview.clearScreen();
+                gameview.setMenuScreen();
             }
 		});
 
@@ -1022,6 +1018,86 @@ public class Gamecontroller {
 		});
         
 
+    }
+
+    private int getInventoryPageCount() {
+        return Math.max(1, (inventory.getListSize() + 5) / 6);
+    }
+
+    private void showInventoryPage() {
+        gameview.clearScreen();
+        if (battleSwapMode) {
+            gameview.setSwapInventoryScreen();
+        } else {
+            gameview.setInventoryScreen();
+        }
+
+        ArrayList<Creature> list = inventory.getCreatureList();
+        int firstIndex = inventoryPage * 6;
+        for (int slot = 0; slot < 6; slot++) {
+            int creatureIndex = firstIndex + slot;
+            if (creatureIndex < list.size()) {
+                Creature current = list.get(creatureIndex);
+                String description = "Code " + creatureIndex
+                        + "\n" + current.getName()
+                        + "\nType: " + current.getType()
+                        + "\nFamily: " + current.getFamily()
+                        + "\nEL: " + current.getEvolutionLevel();
+                if (current.getIsActive() == 1) {
+                    description += "\nACTIVE";
+                }
+                setInventorySlot(slot, current.getFilename(), description);
+            } else {
+                setInventorySlot(slot, null, "Empty inventory slot");
+            }
+        }
+
+        gameview.setInventoryNavigationEnabled(
+                inventoryPage > 0,
+                inventoryPage < getInventoryPageCount() - 1);
+    }
+
+    private void setInventorySlot(int slot, String filename, String description) {
+        switch (slot) {
+            case 0:
+                gameview.setImage1(filename);
+                gameview.setinventorydesc1(description);
+                break;
+            case 1:
+                gameview.setImage2(filename);
+                gameview.setinventorydesc2(description);
+                break;
+            case 2:
+                gameview.setImage3(filename);
+                gameview.setinventorydesc3(description);
+                break;
+            case 3:
+                gameview.setImage4(filename);
+                gameview.setinventorydesc4(description);
+                break;
+            case 4:
+                gameview.setImage5(filename);
+                gameview.setinventorydesc5(description);
+                break;
+            case 5:
+                gameview.setImage6(filename);
+                gameview.setinventorydesc6(description);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid inventory slot: " + slot);
+        }
+    }
+
+    private void returnToMap() {
+        gameview.clearScreen();
+        if (player.getmapsignal() == 1) {
+            gameview.setArea1Screen();
+        } else if (player.getmapsignal() == 2) {
+            gameview.setArea2Screen();
+        } else if (player.getmapsignal() == 3) {
+            gameview.setArea3Screen();
+        }
+        gameview.setRed(area.getnXPos(), area.getnYPos());
     }
 
     

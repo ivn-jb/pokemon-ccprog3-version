@@ -65,6 +65,11 @@ public class CreatureGenerator {
      * @return  creature object for random Creature.
      */
     public Creature randomCreature(int n){
+        if (n <= 0 || n > aAllCreatures.length) {
+            throw new IllegalArgumentException("Creature count must be between 1 and "
+                    + aAllCreatures.length + ".");
+        }
+
         Random CRandom = new Random();
         return aAllCreatures[CRandom.nextInt(n)];
     }

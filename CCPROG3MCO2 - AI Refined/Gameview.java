@@ -107,6 +107,10 @@ public class Gameview {
     private JButton swapButton;
     private JButton catchButton;
     private JButton runButton;
+    private JButton catchResultButton;
+    private JButton evolutionResultButton;
+    private JTextArea evolutionResultText;
+    private JLabel evolutionResultPic;
 
     private JTextArea stats;
     private JTextArea inventorycontent;
@@ -146,6 +150,7 @@ public class Gameview {
         intronextbutton = new JButton("Next");
         intronextbutton.setBounds(869,535,80,30);
         myDialogue = new JTextArea("Welcome to the pokemon world!\nWhat is your name?");
+        configureTextArea(myDialogue);
         myDialogue.setBounds(71,448,300,100);
         myDialogue.setEditable(false);
         nameTF = new JTextField();
@@ -218,16 +223,13 @@ public class Gameview {
         areaexitbutton.setBounds(869,535,80,30);
 
         //map screen 
-        upbutton = new JButton("up");
+        upbutton = new JButton("\u2191");
         upbutton.setBounds(120,210,60,60);
-
-        downbutton = new JButton("down");
+        downbutton = new JButton("\u2193");
         downbutton.setBounds(120,330,60,60);
-
-        leftbutton = new JButton("left");
+        leftbutton = new JButton("\u2190");
         leftbutton.setBounds(60,270,60,60);
-
-        rightbutton = new JButton("right");
+        rightbutton = new JButton("\u2192");
         rightbutton.setBounds(180,270,60,60);
         
 
@@ -242,7 +244,7 @@ public class Gameview {
 
         swapTF = new JTextField();
         swapTF.setBounds(71,515,180,30);
-        swapDialogue = new JLabel("Which Pokemon would you like to swap with?");
+        swapDialogue = new JLabel("Enter Pokemon code:");
         swapDialogue.setBounds(71,453,300,100);
         swapbutton = new JButton("Swap");
         swapbutton.setBounds(71,547,80,30);
@@ -255,29 +257,36 @@ public class Gameview {
         backpagebutton.setBounds(869,450,80,30);
 
         inventorycontent = new JTextArea("");
+        configureTextArea(inventorycontent);
         inventorycontent.setBounds(97,28,827,370);
 
         inventorydesc1 = new JTextArea("");
+        configureTextArea(inventorydesc1);
         inventorydesc1.setBounds(253,21,232,139);
         inventorydesc1.setEditable(false);
 
         inventorydesc2 = new JTextArea("");
+        configureTextArea(inventorydesc2);
         inventorydesc2.setBounds(253,169,232,139);
         inventorydesc2.setEditable(false);
 
         inventorydesc3 = new JTextArea("");
+        configureTextArea(inventorydesc3);
         inventorydesc3.setBounds(253,317,232,139);
         inventorydesc3.setEditable(false);
 
         inventorydesc4 = new JTextArea("");
+        configureTextArea(inventorydesc4);
         inventorydesc4.setBounds(649,21,232,139);
         inventorydesc4.setEditable(false);
 
         inventorydesc5 = new JTextArea("");
+        configureTextArea(inventorydesc5);
         inventorydesc5.setBounds(649,169,232,139);
         inventorydesc5.setEditable(false);
 
         inventorydesc6 = new JTextArea("");
+        configureTextArea(inventorydesc6);
         inventorydesc6.setBounds(649,317,232,139);
         inventorydesc6.setEditable(false);
 
@@ -286,9 +295,9 @@ public class Gameview {
         //evolution
 
         choose1button = new JButton("CHOOSE");
-        choose1button.setBounds(160,100,80,30);
+        choose1button.setBounds(145,100,110,30);
         choose2button = new JButton("CHOOSE");
-        choose2button.setBounds(760,100,80,30);
+        choose2button.setBounds(745,100,110,30);
         evobackbutton = new JButton("Back");
         evobackbutton.setBounds(869,535,80,30);
         evobutton = new JButton("evolve");
@@ -302,8 +311,10 @@ public class Gameview {
         
 
         poke1TA = new JTextArea();
+        configureTextArea(poke1TA);
         poke1TA.setBounds(100,400,200,50);
         poke2TA = new JTextArea();
+        configureTextArea(poke2TA);
         poke2TA.setBounds(720,400,200,50);
         poke1TA.setEditable(false);
         poke2TA.setEditable(false);
@@ -316,12 +327,22 @@ public class Gameview {
         catchButton.setBounds(869,465,80,30);
         runButton = new JButton("Run");
         runButton.setBounds(869,535,80,30);
+        catchResultButton = new JButton("Continue");
+        catchResultButton.setBounds(869,535,80,30);
         attackButton = new JButton("Attack");
         attackButton.setBounds(769,465,80,30);
         swapButton = new JButton("Swap");
         swapButton.setBounds(769,535,80,30);
         stats = new JTextArea();
+        configureTextArea(stats);
         stats.setBounds(71,448,300,100);
+        stats.setText("Choose Attack, Catch, Swap, or Run.");
+
+        evolutionResultButton = new JButton("Continue");
+        evolutionResultButton.setBounds(869,535,80,30);
+        evolutionResultText = new JTextArea();
+        configureTextArea(evolutionResultText);
+        evolutionResultText.setBounds(330,390,360,100);
 
         swapbutton2 = new JButton("Swap");
         swapbutton2.setBounds(71,547,80,30);
@@ -339,6 +360,23 @@ public class Gameview {
 
     public void clearScreen(){
         frame.getContentPane().removeAll();
+        frame.repaint();
+    }
+
+    public void showEvolutionResultScreen(String filename, String message){
+        startBackground = new ImageIcon(this.getClass().getResource("resources/inventory.png"));
+        myBackground = new JLabel(startBackground);
+        myBackground.setSize(1020,600);
+        evolutionResultText.setText(message);
+        myBackground.add(evolutionResultText);
+        myBackground.add(evolutionResultButton);
+
+        ImageIcon evolutionIcon = new ImageIcon(this.getClass().getResource(filename));
+        evolutionResultPic = new JLabel(evolutionIcon);
+        evolutionResultPic.setBounds(375,80,270,270);
+        myBackground.add(evolutionResultPic);
+
+        frame.add(myBackground);
         frame.repaint();
     }
     
@@ -376,6 +414,19 @@ public class Gameview {
 
     public void setMyDialogue(String text) {
         myDialogue.setText(text);
+    }
+
+    public void resetEvolutionSelection() {
+        poke1TF.setText("");
+        poke2TF.setText("");
+        poke1TA.setText("");
+        poke2TA.setText("");
+    }
+
+    private void configureTextArea(JTextArea textArea) {
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
     }
 
     public void hideintrobutton(){
@@ -638,6 +689,11 @@ public class Gameview {
 
     }
 
+    public void setInventoryNavigationEnabled(boolean canGoBack, boolean canGoForward) {
+        backpagebutton.setEnabled(canGoBack);
+        nextpagebutton.setEnabled(canGoForward);
+    }
+
     public void setinventorydesc1(String text){
         inventorydesc1.setText(text);
     }
@@ -663,6 +719,9 @@ public class Gameview {
     }
     
     public void setImage1(String filename){
+        if (filename == null) {
+            return;
+        }
         inventory1Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory1Pic = new JLabel(inventory1Icon);
         inventory1Pic.setBounds(114,20,139,139);
@@ -670,6 +729,9 @@ public class Gameview {
     }
 
     public void setImage2(String filename){
+        if (filename == null) {
+            return;
+        }
         inventory2Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory2Pic = new JLabel(inventory2Icon);
         inventory2Pic.setBounds(114,169,139,139);
@@ -677,6 +739,9 @@ public class Gameview {
     }
 
     public void setImage3(String filename){
+        if (filename == null) {
+            return;
+        }
         inventory3Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory3Pic = new JLabel(inventory3Icon);
         inventory3Pic.setBounds(114,316,139,139);
@@ -686,6 +751,9 @@ public class Gameview {
     }
 
     public void setImage4(String filename){
+        if (filename == null) {
+            return;
+        }
         inventory4Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory4Pic = new JLabel(inventory4Icon);
         inventory4Pic.setBounds(510,20,139,139);
@@ -694,7 +762,9 @@ public class Gameview {
     }
 
     public void setImage5(String filename){
-        
+        if (filename == null) {
+            return;
+        }
         inventory5Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory5Pic = new JLabel(inventory5Icon);
         inventory5Pic.setBounds(510,169,139,139);
@@ -702,7 +772,9 @@ public class Gameview {
     }
 
     public void setImage6(String filename){
-
+        if (filename == null) {
+            return;
+        }
         inventory6Icon = new ImageIcon(this.getClass().getResource(filename));
         inventory6Pic = new JLabel(inventory6Icon);
         inventory6Pic.setBounds(510,316,139,139);
@@ -731,7 +803,7 @@ public class Gameview {
 	}
 
     public int getSwapTFInt() {
-		return Integer.parseInt(this.swapTF.getText());
+		return parseIndex(this.swapTF);
 	}
 
     public void setevolutionscreen(){
@@ -777,11 +849,19 @@ public class Gameview {
 	}
 
     public int getpoke1TFInt() {
-		return Integer.parseInt(this.poke1TF.getText());
+		return parseIndex(this.poke1TF);
 	}
 
     public int getpoke2TFInt() {
-		return Integer.parseInt(this.poke2TF.getText());
+		return parseIndex(this.poke2TF);
+	}
+
+	private int parseIndex(JTextField field) {
+	    try {
+	        return Integer.parseInt(field.getText().trim());
+	    } catch (NumberFormatException exception) {
+	        return -1;
+	    }
 	}
 
     public void setpoke1TA(String text) {
@@ -789,17 +869,27 @@ public class Gameview {
     }
 
     public void setpokepic1 (String filename){
+        if (pokepic1 != null) {
+            myBackground.remove(pokepic1);
+        }
         pic1 = new ImageIcon(this.getClass().getResource(filename));
         pokepic1 = new JLabel(pic1);
         pokepic1.setBounds(74,121,270,270);
         myBackground.add(pokepic1);
+        myBackground.revalidate();
+        myBackground.repaint();
     }
 
     public void setpokepic2 (String filename){
+        if (pokepic2 != null) {
+            myBackground.remove(pokepic2);
+        }
         pic2 = new ImageIcon(this.getClass().getResource(filename));
         pokepic2 = new JLabel(pic2);
         pokepic2.setBounds(673,121,270,270);
         myBackground.add(pokepic2);
+        myBackground.revalidate();
+        myBackground.repaint();
     }
 
 
@@ -834,6 +924,7 @@ public class Gameview {
         startBackground = new ImageIcon(this.getClass().getResource("resources/battlescreen.png"));
         myBackground = new JLabel(startBackground);
         myBackground.setSize(1020,600);
+        stats.setText("Choose Attack, Catch, Swap, or Run.");
 
         myBackground.add(catchButton);
         myBackground.add(attackButton);
@@ -849,6 +940,18 @@ public class Gameview {
         myBackground.add(enemyPic);
 
     }
+
+    public void showCatchResultScreen(String message){
+        startBackground = new ImageIcon(this.getClass().getResource("resources/battlescreen.png"));
+        myBackground = new JLabel(startBackground);
+        myBackground.setSize(1020,600);
+        stats.setText(message);
+        myBackground.add(stats);
+        myBackground.add(catchResultButton);
+        frame.add(myBackground);
+        frame.revalidate();
+        frame.repaint();
+    }
     public void setattackbuttonListener(ActionListener actionListener) {
 		this.attackButton.addActionListener(actionListener);
 	}
@@ -859,6 +962,14 @@ public class Gameview {
 
     public void setcatchbuttonListener(ActionListener actionListener) {
 		this.catchButton.addActionListener(actionListener);
+	}
+
+    public void setcatchResultButtonListener(ActionListener actionListener) {
+		this.catchResultButton.addActionListener(actionListener);
+	}
+
+    public void setevolutionResultButtonListener(ActionListener actionListener) {
+		this.evolutionResultButton.addActionListener(actionListener);
 	}
 
     public void setrunbuttonListener(ActionListener actionListener) {
@@ -883,6 +994,29 @@ public class Gameview {
 
         frame.repaint();
 
+    }
+
+    public void setSwapInventoryScreen(){
+        startBackground = new ImageIcon(this.getClass().getResource("resources/inventory.png"));
+        myBackground = new JLabel(startBackground);
+        myBackground.setSize(1020,600);
+
+        myBackground.add(swapTF);
+        myBackground.add(swapDialogue);
+        myBackground.add(nextpagebutton);
+        myBackground.add(backpagebutton);
+        myBackground.add(invbackbutton2);
+        myBackground.add(swapbutton2);
+        myBackground.add(inventorydesc1);
+        myBackground.add(inventorydesc2);
+        myBackground.add(inventorydesc3);
+        myBackground.add(inventorydesc4);
+        myBackground.add(inventorydesc5);
+        myBackground.add(inventorydesc6);
+
+        frame.add(myBackground);
+        frame.revalidate();
+        frame.repaint();
     }
 
     public void setswapbutton2Listener(ActionListener actionListener) {
